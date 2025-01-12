@@ -5,26 +5,35 @@ import (
 	"fmt"
 	"os"
 	"strings"
+
+	"github.com/Rodabaugh/digitalshelf-cli/internal/digitalshelfapi"
 )
 
 type cliCommand struct {
 	name        string
 	description string
-	callback    func() error
+	callback    func(*digitalshelfapi.Session, ...string) error
 }
 
-func startRepl() {
-	reader := bufio.NewScanner(os.Stdin)
-	for {
-		fmt.Print("DigitalShelf > ")
-		reader.Scan()
+func startRepl(session *digitalshelfapi.Session) {
+	scanner := bufio.NewScanner(os.Stdin)
 
-		words := cleanInput(reader.Text())
-		if len(words) == 0 {
+	for {
+		print("digitalshelf > ")
+		scanner.Scan()
+		input := scanner.Text()
+		cleanedInput := cleanInput(input)
+
+		if len(cleanedInput) == 0 {
 			continue
 		}
 
-		commandName := words[0]
+		commandName := cleanedInput[0]
+		args := []string{}
+
+		if len(cleanedInput) > 1 {
+			args = cleanedInput[1:]
+		}
 
 		command, exists := getCommands()[commandName]
 		if !exists {
@@ -32,7 +41,7 @@ func startRepl() {
 			continue
 		}
 
-		err := command.callback()
+		err := command.callback(session, args...)
 		if err != nil {
 			fmt.Println(err)
 		}
@@ -56,6 +65,11 @@ func getCommands() map[string]cliCommand {
 			name:        "help",
 			description: "Show available commands",
 			callback:    commandHelp,
+		},
+		"login": {
+			name:        "login",
+			description: "Login to your DigitalShelf account",
+			callback:    commandLogin,
 		},
 	}
 }

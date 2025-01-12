@@ -1,8 +1,12 @@
 package main
 
-import "fmt"
+import (
+	"fmt"
 
-func commandHelp() error {
+	"github.com/Rodabaugh/digitalshelf-cli/internal/digitalshelfapi"
+)
+
+func commandHelp(session *digitalshelfapi.Session, args ...string) error {
 	availableCommands := getCommands()
 
 	for _, cmd := range availableCommands {

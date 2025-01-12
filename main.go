@@ -3,7 +3,9 @@ package main
 import (
 	"log"
 	"os"
+	"time"
 
+	"github.com/Rodabaugh/digitalshelf-cli/internal/digitalshelfapi"
 	"github.com/joho/godotenv"
 )
 
@@ -18,5 +20,10 @@ func main() {
 		log.Fatal("PLATFORM must be set to either dev or prod")
 	}
 
-	startRepl()
+	session := digitalshelfapi.Session{
+		DSAPIClient: digitalshelfapi.NewClient(time.Second * 10),
+		Base_url:    dbURL,
+	}
+
+	startRepl(&session)
 }
