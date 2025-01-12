@@ -2,6 +2,8 @@ package digitalshelfapi
 
 import (
 	"net/http"
+
+	"github.com/google/uuid"
 )
 
 // Client -
@@ -18,7 +20,7 @@ type Session struct {
 }
 
 type User struct {
-	ID    string `json:"id"`
-	Name  string `json:"name"`
-	Email string `json:"email"`
+	ID    uuid.UUID `json:"id"`
+	Name  string    `json:"name"`
+	Email string    `json:"email"`
 }

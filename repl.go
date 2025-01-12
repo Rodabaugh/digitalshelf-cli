@@ -71,5 +71,20 @@ func getCommands() map[string]cliCommand {
 			description: "Login to your DigitalShelf account",
 			callback:    commandLogin,
 		},
+		"create": {
+			name:        "create",
+			description: "Create a new item/location",
+			callback:    commandCreate,
+		},
+		"join": {
+			name:        "join",
+			description: "Join a location",
+			callback:    commandJoin,
+		},
+		"get": {
+			name:        "get",
+			description: "Get information about an item/location",
+			callback:    commandGet,
+		},
 	}
 }

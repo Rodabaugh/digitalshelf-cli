@@ -6,15 +6,17 @@ import (
 	"errors"
 	"fmt"
 	"net/http"
+
+	"github.com/google/uuid"
 )
 
 func (session *Session) Authenticate(args ...string) error {
 	type response struct {
-		ID           string `json:"id"`
-		Name         string `json:"name"`
-		Email        string `json:"email"`
-		Token        string `json:"token"`
-		RefreshToken string `json:"refresh_token"`
+		ID           uuid.UUID `json:"id"`
+		Name         string    `json:"name"`
+		Email        string    `json:"email"`
+		Token        string    `json:"token"`
+		RefreshToken string    `json:"refresh_token"`
 	}
 
 	type parameters struct {
@@ -71,4 +73,11 @@ func (session *Session) Authenticate(args ...string) error {
 	}
 
 	return errors.New("error authenticating")
+}
+
+func validateLoggedIn(session *Session) error {
+	if session.Token == "" {
+		return errors.New("you must be logged in to do that")
+	}
+	return nil
 }
