@@ -113,3 +113,34 @@ func (session *Session) GetShelves(args ...string) error {
 		return fmt.Errorf("error getting shelves")
 	}
 }
+
+func (session *Session) validateShelf(shelfID string) error {
+	err := validateLoggedIn(session)
+	if err != nil {
+		return err
+	}
+
+	url := session.Base_url + "shelves/" + shelfID
+
+	req, err := http.NewRequest("GET", url, nil)
+	if err != nil {
+		return err
+	}
+
+	res, err := session.DSAPIClient.HttpClient.Do(req)
+	if err != nil {
+		fmt.Println("error making request: ", err)
+	}
+	defer res.Body.Close()
+
+	if res.StatusCode == http.StatusOK {
+		var c Case
+		err = json.NewDecoder(res.Body).Decode(&c)
+		if err != nil {
+			return err
+		}
+		return nil
+	} else {
+		return fmt.Errorf("shelf not found")
+	}
+}

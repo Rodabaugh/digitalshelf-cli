@@ -101,5 +101,10 @@ func getCommands() map[string]cliCommand {
 			description: "Change your password",
 			callback:    commandChangePassword,
 		},
+		"add": {
+			name:        "add",
+			description: "Add an item",
+			callback:    commandAdd,
+		},
 	}
 }

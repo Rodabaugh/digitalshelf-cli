@@ -2,6 +2,7 @@ package digitalshelfapi
 
 import (
 	"net/http"
+	"time"
 
 	"github.com/google/uuid"
 )
@@ -36,4 +37,16 @@ type Shelf struct {
 	ID     uuid.UUID `json:"id"`
 	Name   string    `json:"name"`
 	CaseID uuid.UUID `json:"case_id"`
+}
+
+type Movie struct {
+	ID          uuid.UUID `json:"id"`
+	Title       string    `json:"title"`
+	Genre       string    `json:"genre"`
+	Actors      string    `json:"actors"`
+	Writer      string    `json:"writer"`
+	Director    string    `json:"director"`
+	Barcode     string    `json:"barcode"`
+	ShelfID     uuid.UUID `json:"shelf_id"`
+	ReleaseDate time.Time `json:"release_date"`
 }
