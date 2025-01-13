@@ -43,7 +43,7 @@ func (session *Session) GetUserLocations(args ...string) error {
 		}
 		fmt.Println("Locations:")
 		for _, location := range locations {
-			fmt.Printf("Location ID: %s, Location Name: %s\n", location.LocationID, location.LocationName)
+			fmt.Printf("Location Name: %s, Location ID: %s\n", location.LocationName, location.LocationID)
 		}
 		return nil
 	} else {
@@ -137,4 +137,45 @@ func (session *Session) JoinLocaion(args ...string) error {
 	} else {
 		return fmt.Errorf("error adding member to location")
 	}
+}
+
+func (session *Session) SetCurrentLocation(args ...string) error {
+	err := validateLoggedIn(session)
+	if err != nil {
+		return err
+	}
+
+	fmt.Println("args: ", args)
+
+	if len(args) < 1 {
+		return fmt.Errorf("missing location ID")
+	}
+
+	url := session.Base_url + "locations/" + args[0]
+
+	req, err := http.NewRequest("GET", url, nil)
+	if err != nil {
+		return fmt.Errorf("error creating request: %v", err)
+	}
+
+	res, err := session.DSAPIClient.HttpClient.Do(req)
+	if err != nil {
+		return fmt.Errorf("error making request: %v", err)
+	}
+	defer res.Body.Close()
+
+	if res.StatusCode != http.StatusOK {
+		return fmt.Errorf("location not found")
+	}
+
+	var location struct {
+		ID uuid.UUID `json:"id"`
+	}
+	err = json.NewDecoder(res.Body).Decode(&location)
+	if err != nil {
+		return fmt.Errorf("error decoding response: %v", err)
+	}
+	session.CurrentLocation = location.ID
+	fmt.Printf("Location set to: %s\n", args[0])
+	return nil
 }

@@ -86,5 +86,10 @@ func getCommands() map[string]cliCommand {
 			description: "Get information about an item/location",
 			callback:    commandGet,
 		},
+		"set": {
+			name:        "set",
+			description: "Set a value or location",
+			callback:    commandSet,
+		},
 	}
 }
