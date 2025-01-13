@@ -96,5 +96,10 @@ func getCommands() map[string]cliCommand {
 			description: "Logout of your DigitalShelf account. Use 'logout all' to logout of all sessions",
 			callback:    commandLogout,
 		},
+		"changepassword": {
+			name:        "changepassword",
+			description: "Change your password",
+			callback:    commandChangePassword,
+		},
 	}
 }

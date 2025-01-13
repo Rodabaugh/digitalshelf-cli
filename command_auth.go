@@ -34,3 +34,19 @@ func commandLogout(session *digitalshelfapi.Session, args ...string) error {
 		return fmt.Errorf("unknown logout command: %s", args[0])
 	}
 }
+
+func commandChangePassword(session *digitalshelfapi.Session, args ...string) error {
+	var newPassword, confirmPassword string
+
+	fmt.Print("Enter your new password: ")
+	fmt.Scanln(&newPassword)
+
+	fmt.Print("Confrim your new password: ")
+	fmt.Scanln(&confirmPassword)
+
+	if newPassword != confirmPassword {
+		return fmt.Errorf("passwords do not match")
+	}
+
+	return session.ChangePassword(newPassword)
+}

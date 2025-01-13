@@ -137,3 +137,52 @@ func (session *Session) RevokeAllSessions() error {
 		return fmt.Errorf("error revoking sessions")
 	}
 }
+
+func (session *Session) ChangePassword(args ...string) error {
+	err := validateLoggedIn(session)
+	if err != nil {
+		return err
+	}
+
+	var newPassword string
+
+	newPassword = args[0]
+	if newPassword == "" {
+		return errors.New("new password is required")
+	}
+
+	type parameters struct {
+		Email    string `json:"email"`
+		Password string `json:"password"`
+	}
+
+	url := session.Base_url + "users"
+	params := parameters{
+		Email:    session.User.Email,
+		Password: newPassword,
+	}
+
+	request_data, err := json.Marshal(params)
+	if err != nil {
+		return err
+	}
+
+	req, err := http.NewRequest("PUT", url, bytes.NewBuffer(request_data))
+	if err != nil {
+		return err
+	}
+	req.Header.Set("Authorization", "Bearer "+session.Token)
+
+	res, err := session.DSAPIClient.HttpClient.Do(req)
+	if err != nil {
+		fmt.Println("error making request: ", err)
+	}
+	defer res.Body.Close()
+
+	if res.StatusCode == http.StatusOK {
+		fmt.Println("Password changed successfully")
+		return nil
+	} else {
+		return fmt.Errorf("error changing password")
+	}
+}
