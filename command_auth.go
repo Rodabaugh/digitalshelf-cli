@@ -22,3 +22,15 @@ func commandLogin(session *digitalshelfapi.Session, args ...string) error {
 	fmt.Printf("Welcome, %s\n", session.User.Name)
 	return nil
 }
+
+func commandLogout(session *digitalshelfapi.Session, args ...string) error {
+	if len(args) == 0 {
+		return session.Logout()
+	}
+	switch args[0] {
+	case "all":
+		return session.RevokeAllSessions()
+	default:
+		return fmt.Errorf("unknown logout command: %s", args[0])
+	}
+}

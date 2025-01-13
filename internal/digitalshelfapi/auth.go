@@ -81,3 +81,59 @@ func validateLoggedIn(session *Session) error {
 	}
 	return nil
 }
+
+func (session *Session) Logout() error {
+	err := validateLoggedIn(session)
+	if err != nil {
+		return err
+	}
+
+	url := session.Base_url + "revoke"
+	req, err := http.NewRequest("POST", url, nil)
+	if err != nil {
+		return err
+	}
+	req.Header.Set("Authorization", "Bearer "+session.Token)
+
+	res, err := session.DSAPIClient.HttpClient.Do(req)
+	if err != nil {
+		fmt.Println("error making request: ", err)
+	}
+	defer res.Body.Close()
+
+	if res.StatusCode == http.StatusNoContent {
+		fmt.Println("Logged out successfully")
+		session.Token = ""
+		session.RefreshToken = ""
+		return nil
+	} else {
+		return fmt.Errorf("error logging out")
+	}
+}
+
+func (session *Session) RevokeAllSessions() error {
+	err := validateLoggedIn(session)
+	if err != nil {
+		return err
+	}
+
+	url := session.Base_url + "revoke-all"
+	req, err := http.NewRequest("POST", url, nil)
+	if err != nil {
+		return err
+	}
+	req.Header.Set("Authorization", "Bearer "+session.Token)
+
+	res, err := session.DSAPIClient.HttpClient.Do(req)
+	if err != nil {
+		fmt.Println("error making request: ", err)
+	}
+	defer res.Body.Close()
+
+	if res.StatusCode == http.StatusOK {
+		fmt.Printf("All sessions revoked\nYou are now logged out\n")
+		return nil
+	} else {
+		return fmt.Errorf("error revoking sessions")
+	}
+}
