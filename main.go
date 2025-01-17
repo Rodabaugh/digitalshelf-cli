@@ -23,6 +23,7 @@ func main() {
 	session := digitalshelfapi.Session{
 		DSAPIClient: digitalshelfapi.NewClient(time.Second * 10),
 		Base_url:    dbURL,
+		Platform:    platform,
 	}
 
 	startRepl(&session)

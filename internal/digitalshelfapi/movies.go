@@ -113,3 +113,96 @@ func (session *Session) AddMovie(shelfID uuid.UUID, movie Movie) error {
 
 	return fmt.Errorf("error adding movie: %v", res.Status)
 }
+
+func (session *Session) GetMovies(args ...string) error {
+	err := validateLoggedIn(session)
+	if err != nil {
+		return err
+	}
+
+	if len(args) < 1 {
+		return fmt.Errorf("please specify a shelf ID")
+	}
+
+	shelfID := args[0]
+
+	url := session.Base_url + "shelves/" + shelfID + "/movies"
+
+	req, err := http.NewRequest("GET", url, nil)
+	if err != nil {
+		return fmt.Errorf("error creating request: %v", err)
+	}
+
+	res, err := session.DSAPIClient.HttpClient.Do(req)
+	if err != nil {
+		return fmt.Errorf("error making request: %v", err)
+	}
+	defer res.Body.Close()
+
+	if res.StatusCode != http.StatusOK {
+		return fmt.Errorf("error getting movies: %v", res.Status)
+	}
+
+	var movies []Movie
+	if err := json.NewDecoder(res.Body).Decode(&movies); err != nil {
+		return fmt.Errorf("error decoding response: %v", err)
+	}
+
+	for _, movie := range movies {
+		fmt.Printf("Title: %s\n", movie.Title)
+		fmt.Printf("Genre: %s\n", movie.Genre)
+		fmt.Printf("Actors: %s\n", movie.Actors)
+		fmt.Printf("Writer: %s\n", movie.Writer)
+		fmt.Printf("Director: %s\n", movie.Director)
+		fmt.Printf("Release Date: %s\n", movie.ReleaseDate)
+		fmt.Println()
+	}
+
+	return nil
+}
+
+func (session *Session) GetAllLocationMovies(args ...string) error {
+	err := validateLoggedIn(session)
+	if err != nil {
+		return fmt.Errorf("error validating login: %v", err)
+	}
+
+	if len(args) < 1 {
+		return fmt.Errorf("please specify a location ID")
+	}
+
+	locationID, err := uuid.Parse(args[0])
+	if err != nil {
+		return fmt.Errorf("invalid location ID: %v", err)
+	}
+
+	url := session.Base_url + "locations/" + locationID.String() + "/movies"
+
+	req, err := http.NewRequest("GET", url, nil)
+	if err != nil {
+		return fmt.Errorf("error creating request: %v", err)
+	}
+
+	res, err := session.DSAPIClient.HttpClient.Do(req)
+	if err != nil {
+		return fmt.Errorf("error making request: %v", err)
+	}
+	defer res.Body.Close()
+
+	if res.StatusCode != http.StatusOK {
+		return fmt.Errorf("error getting movies: %v", res.Status)
+	}
+
+	var movies []Movie
+	if err := json.NewDecoder(res.Body).Decode(&movies); err != nil {
+		return fmt.Errorf("error decoding response: %v", err)
+	}
+
+	for _, movie := range movies {
+		fmt.Printf("ID: %s\n", movie.ID)
+		fmt.Printf("Title: %s\n", movie.Title)
+		fmt.Printf("Release Date: %s\n", movie.ReleaseDate)
+		fmt.Println()
+	}
+	return nil
+}

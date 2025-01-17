@@ -4,6 +4,7 @@ import (
 	"fmt"
 
 	"github.com/Rodabaugh/digitalshelf-cli/internal/digitalshelfapi"
+	"github.com/google/uuid"
 )
 
 func commandGet(session *digitalshelfapi.Session, args ...string) error {
@@ -20,6 +21,29 @@ func commandGet(session *digitalshelfapi.Session, args ...string) error {
 			return fmt.Errorf("please specify a case ID")
 		}
 		return session.GetShelves(args[1])
+	case "movies":
+		if len(args) < 2 {
+			return fmt.Errorf("please specify a shelf ID")
+		}
+		return session.GetMovies(args[1])
+	case "location":
+		return getLocation(session, args[1:]...)
+	default:
+		return fmt.Errorf("unknown get command: %s", args[0])
+	}
+}
+
+func getLocation(session *digitalshelfapi.Session, args ...string) error {
+	if len(args) == 0 {
+		return fmt.Errorf("please specify what you want to get for this location")
+	}
+	if session.CurrentLocation == uuid.Nil {
+		return fmt.Errorf("please set a location first")
+	}
+
+	switch args[0] {
+	case "movies":
+		return session.GetAllLocationMovies(session.CurrentLocation.String())
 	default:
 		return fmt.Errorf("unknown get command: %s", args[0])
 	}
