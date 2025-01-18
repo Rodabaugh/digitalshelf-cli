@@ -23,7 +23,7 @@ func (session *Session) CreateCase(args ...string) error {
 		return fmt.Errorf("no location set - please set a location")
 	}
 
-	url := session.Base_url + "cases"
+	url := session.BaseURL + "cases"
 
 	type caseRequest struct {
 		Name       string `json:"name"`
@@ -71,7 +71,7 @@ func (session *Session) GetCases() error {
 		return fmt.Errorf("no location set - please set a location")
 	}
 
-	url := session.Base_url + "locations/" + session.CurrentLocation.String() + "/cases"
+	url := session.BaseURL + "locations/" + session.CurrentLocation.String() + "/cases"
 
 	req, err := http.NewRequest("GET", url, nil)
 	if err != nil {
@@ -106,7 +106,7 @@ func (session *Session) ValidateCase(caseID string) error {
 		return err
 	}
 
-	url := session.Base_url + "cases/" + caseID
+	url := session.BaseURL + "cases/" + caseID
 
 	req, err := http.NewRequest("GET", url, nil)
 	if err != nil {

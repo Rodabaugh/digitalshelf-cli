@@ -22,7 +22,7 @@ func (session *Session) LookupMovieBarcode(args ...string) (Movie, error) {
 
 	barcode := args[0]
 
-	url := session.Base_url + "search/movie_barcodes/" + barcode
+	url := session.BaseURL + "search/movie_barcodes/" + barcode
 
 	req, err := http.NewRequest("GET", url, nil)
 	if err != nil {
@@ -86,7 +86,7 @@ func (session *Session) AddMovie(shelfID uuid.UUID, movie Movie) error {
 		ReleaseDate: movie.ReleaseDate,
 	}
 
-	url := session.Base_url + "movies"
+	url := session.BaseURL + "movies"
 
 	reqBody, err := json.Marshal(params)
 	if err != nil {
@@ -126,7 +126,7 @@ func (session *Session) GetMovies(args ...string) error {
 
 	shelfID := args[0]
 
-	url := session.Base_url + "shelves/" + shelfID + "/movies"
+	url := session.BaseURL + "shelves/" + shelfID + "/movies"
 
 	req, err := http.NewRequest("GET", url, nil)
 	if err != nil {
@@ -164,7 +164,7 @@ func (session *Session) GetMovies(args ...string) error {
 func (session *Session) GetAllLocationMovies(args ...string) error {
 	err := validateLoggedIn(session)
 	if err != nil {
-		return fmt.Errorf("error validating login: %v", err)
+		return fmt.Errorf("you must be logged in to do that")
 	}
 
 	if len(args) < 1 {
@@ -176,7 +176,7 @@ func (session *Session) GetAllLocationMovies(args ...string) error {
 		return fmt.Errorf("invalid location ID: %v", err)
 	}
 
-	url := session.Base_url + "locations/" + locationID.String() + "/movies"
+	url := session.BaseURL + "locations/" + locationID.String() + "/movies"
 
 	req, err := http.NewRequest("GET", url, nil)
 	if err != nil {
@@ -204,5 +204,53 @@ func (session *Session) GetAllLocationMovies(args ...string) error {
 		fmt.Printf("Release Date: %s\n", movie.ReleaseDate)
 		fmt.Println()
 	}
+	return nil
+}
+
+func (session *Session) GetMovie(args ...string) error {
+	err := validateLoggedIn(session)
+	if err != nil {
+		return err
+	}
+
+	if len(args) < 1 {
+		return fmt.Errorf("please specify a movie ID")
+	}
+
+	movieUUID, err := uuid.Parse(args[0])
+	if err != nil {
+		return fmt.Errorf("invalid movie ID: %v", err)
+	}
+
+	url := session.BaseURL + "movies/" + movieUUID.String()
+
+	req, err := http.NewRequest("GET", url, nil)
+	if err != nil {
+		return fmt.Errorf("error creating request: %v", err)
+	}
+
+	res, err := session.DSAPIClient.HttpClient.Do(req)
+	if err != nil {
+		return fmt.Errorf("error making request: %v", err)
+	}
+	defer res.Body.Close()
+
+	if res.StatusCode != http.StatusOK {
+		return fmt.Errorf("error getting movie: %v", res.Status)
+	}
+
+	var movie Movie
+	if err := json.NewDecoder(res.Body).Decode(&movie); err != nil {
+		return fmt.Errorf("error decoding response: %v", err)
+	}
+
+	fmt.Printf("Title: %s\n", movie.Title)
+	fmt.Printf("Genre: %s\n", movie.Genre)
+	fmt.Printf("Actors: %s\n", movie.Actors)
+	fmt.Printf("Writer: %s\n", movie.Writer)
+	fmt.Printf("Director: %s\n", movie.Director)
+	fmt.Printf("Release Date: %s\n", movie.ReleaseDate)
+	fmt.Printf("Barcode: %s\n", movie.Barcode)
+
 	return nil
 }

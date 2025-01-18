@@ -1,10 +1,41 @@
 package main
 
 import (
+	"bufio"
 	"fmt"
+	"os"
 
 	"github.com/Rodabaugh/digitalshelf-cli/internal/digitalshelfapi"
 )
+
+func commandRegister(session *digitalshelfapi.Session, _ ...string) error {
+	scanner := bufio.NewScanner(os.Stdin)
+	var name, email string
+
+	fmt.Print("Enter your name: ")
+	scanner.Scan()
+	name = scanner.Text()
+
+	fmt.Print("Enter your email: ")
+	scanner.Scan()
+	email = scanner.Text()
+
+	var newPassword, confirmPassword string
+
+	fmt.Print("Enter your new password: ")
+	scanner.Scan()
+	newPassword = scanner.Text()
+
+	fmt.Print("Confrim your new password: ")
+	scanner.Scan()
+	confirmPassword = scanner.Text()
+
+	if newPassword != confirmPassword {
+		return fmt.Errorf("passwords do not match")
+	}
+
+	return session.CreateUser(name, email, newPassword)
+}
 
 func commandLogin(session *digitalshelfapi.Session, args ...string) error {
 	var email, password string

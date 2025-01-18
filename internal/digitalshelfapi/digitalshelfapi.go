@@ -15,7 +15,7 @@ type Client struct {
 type Session struct {
 	DSAPIClient     Client
 	Platform        string
-	Base_url        string
+	BaseURL         string
 	User            User
 	Token           string
 	RefreshToken    string

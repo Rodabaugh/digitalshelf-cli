@@ -24,7 +24,7 @@ func (session *Session) Authenticate(args ...string) error {
 		Password string
 	}
 
-	url := session.Base_url + "login"
+	url := session.BaseURL + "login"
 	email := args[0]
 	if email == "" {
 		return errors.New("email is required")
@@ -88,7 +88,7 @@ func (session *Session) Logout() error {
 		return err
 	}
 
-	url := session.Base_url + "revoke"
+	url := session.BaseURL + "revoke"
 	req, err := http.NewRequest("POST", url, nil)
 	if err != nil {
 		return err
@@ -117,7 +117,7 @@ func (session *Session) RevokeAllSessions() error {
 		return err
 	}
 
-	url := session.Base_url + "revoke-all"
+	url := session.BaseURL + "revoke-all"
 	req, err := http.NewRequest("POST", url, nil)
 	if err != nil {
 		return err
@@ -144,9 +144,7 @@ func (session *Session) ChangePassword(args ...string) error {
 		return err
 	}
 
-	var newPassword string
-
-	newPassword = args[0]
+	newPassword := args[0]
 	if newPassword == "" {
 		return errors.New("new password is required")
 	}
@@ -156,7 +154,7 @@ func (session *Session) ChangePassword(args ...string) error {
 		Password string `json:"password"`
 	}
 
-	url := session.Base_url + "users"
+	url := session.BaseURL + "users"
 	params := parameters{
 		Email:    session.User.Email,
 		Password: newPassword,

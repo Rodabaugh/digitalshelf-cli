@@ -36,7 +36,7 @@ func (session *Session) CreateShelf(args ...string) error {
 		return fmt.Errorf("invalid case ID")
 	}
 
-	url := session.Base_url + "shelves"
+	url := session.BaseURL + "shelves"
 
 	params := parameters{
 		Name:   shelfName,
@@ -85,7 +85,7 @@ func (session *Session) GetShelves(args ...string) error {
 		return err
 	}
 
-	url := session.Base_url + "cases/" + caseID + "/shelves"
+	url := session.BaseURL + "cases/" + caseID + "/shelves"
 
 	req, err := http.NewRequest("GET", url, nil)
 	if err != nil {
@@ -120,7 +120,7 @@ func (session *Session) validateShelf(shelfID string) error {
 		return err
 	}
 
-	url := session.Base_url + "shelves/" + shelfID
+	url := session.BaseURL + "shelves/" + shelfID
 
 	req, err := http.NewRequest("GET", url, nil)
 	if err != nil {

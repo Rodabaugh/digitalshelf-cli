@@ -16,7 +16,7 @@ func (session *Session) GetUserLocations(args ...string) error {
 		return err
 	}
 
-	url := session.Base_url + "users/" + session.User.ID.String() + "/locations"
+	url := session.BaseURL + "users/" + session.User.ID.String() + "/locations"
 
 	type locationMembership []struct {
 		LocationID   string    `json:"location_id"`
@@ -57,7 +57,7 @@ func (session *Session) CreateLocation(args ...string) error {
 		return err
 	}
 
-	url := session.Base_url + "locations"
+	url := session.BaseURL + "locations"
 	type parameters struct {
 		Name    string    `json:"name"`
 		OwnerID uuid.UUID `json:"owner_id"`
@@ -107,7 +107,7 @@ func (session *Session) JoinLocaion(args ...string) error {
 		return err
 	}
 
-	url := session.Base_url + "locations/" + args[0] + "/members"
+	url := session.BaseURL + "locations/" + args[0] + "/members"
 	type parameters struct {
 		UserID uuid.UUID `json:"user_id"`
 	}
@@ -123,6 +123,10 @@ func (session *Session) JoinLocaion(args ...string) error {
 	if err != nil {
 		return fmt.Errorf("error creating request: %v", err)
 	}
+
+	req.Header.Set("Content-Type", "application/json")
+	req.Header.Set("Authorization", "Bearer "+session.Token)
+
 	res, err := session.DSAPIClient.HttpClient.Do(req)
 	if err != nil {
 		return fmt.Errorf("error making request: %v", err)
@@ -151,7 +155,7 @@ func (session *Session) SetCurrentLocation(args ...string) error {
 		return fmt.Errorf("missing location ID")
 	}
 
-	url := session.Base_url + "locations/" + args[0]
+	url := session.BaseURL + "locations/" + args[0]
 
 	req, err := http.NewRequest("GET", url, nil)
 	if err != nil {

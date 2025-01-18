@@ -14,6 +14,8 @@ func commandGet(session *digitalshelfapi.Session, args ...string) error {
 	switch args[0] {
 	case "locations":
 		return session.GetUserLocations()
+	case "invites":
+		return session.GetUserInvites()
 	case "cases":
 		return session.GetCases()
 	case "shelves":
@@ -26,6 +28,11 @@ func commandGet(session *digitalshelfapi.Session, args ...string) error {
 			return fmt.Errorf("please specify a shelf ID")
 		}
 		return session.GetMovies(args[1])
+	case "movie":
+		if len(args) < 2 {
+			return fmt.Errorf("please specify a movie ID")
+		}
+		return session.GetMovie(args[1])
 	case "location":
 		return getLocation(session, args[1:]...)
 	default:
