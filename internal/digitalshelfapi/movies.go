@@ -29,6 +29,8 @@ func (session *Session) LookupMovieBarcode(args ...string) (Movie, error) {
 		return Movie{}, fmt.Errorf("error creating request: %v", err)
 	}
 
+	req.Header.Set("Authorization", "Bearer "+session.Token)
+
 	res, err := session.DSAPIClient.HttpClient.Do(req)
 	if err != nil {
 		return Movie{}, fmt.Errorf("error making request: %v", err)
@@ -99,6 +101,7 @@ func (session *Session) AddMovie(shelfID uuid.UUID, movie Movie) error {
 	}
 
 	req.Header.Set("Content-Type", "application/json")
+	req.Header.Set("Authorization", "Bearer "+session.Token)
 
 	res, err := session.DSAPIClient.HttpClient.Do(req)
 	if err != nil {
@@ -132,6 +135,8 @@ func (session *Session) GetMovies(args ...string) error {
 	if err != nil {
 		return fmt.Errorf("error creating request: %v", err)
 	}
+
+	req.Header.Set("Authorization", "Bearer "+session.Token)
 
 	res, err := session.DSAPIClient.HttpClient.Do(req)
 	if err != nil {
@@ -183,6 +188,8 @@ func (session *Session) GetAllLocationMovies(args ...string) error {
 		return fmt.Errorf("error creating request: %v", err)
 	}
 
+	req.Header.Set("Authorization", "Bearer "+session.Token)
+
 	res, err := session.DSAPIClient.HttpClient.Do(req)
 	if err != nil {
 		return fmt.Errorf("error making request: %v", err)
@@ -228,6 +235,8 @@ func (session *Session) GetMovie(args ...string) error {
 	if err != nil {
 		return fmt.Errorf("error creating request: %v", err)
 	}
+
+	req.Header.Set("Authorization", "Bearer "+session.Token)
 
 	res, err := session.DSAPIClient.HttpClient.Do(req)
 	if err != nil {

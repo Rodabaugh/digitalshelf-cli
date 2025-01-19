@@ -25,27 +25,28 @@ func (session *Session) CreateCase(args ...string) error {
 
 	url := session.BaseURL + "cases"
 
-	type caseRequest struct {
+	type parameters struct {
 		Name       string `json:"name"`
 		LocationID string `json:"location_id"`
 	}
 
-	reqBody := caseRequest{
+	params := parameters{
 		Name:       args[0],
 		LocationID: session.CurrentLocation.String(),
 	}
 
-	reqBytes, err := json.Marshal(reqBody)
+	requestBody, err := json.Marshal(params)
 	if err != nil {
 		return err
 	}
 
-	req, err := http.NewRequest("POST", url, bytes.NewBuffer(reqBytes))
+	req, err := http.NewRequest("POST", url, bytes.NewBuffer(requestBody))
 	if err != nil {
 		return err
 	}
 
 	req.Header.Set("Content-Type", "application/json")
+	req.Header.Set("Authorization", "Bearer "+session.Token)
 
 	res, err := session.DSAPIClient.HttpClient.Do(req)
 	if err != nil {
@@ -77,6 +78,7 @@ func (session *Session) GetCases() error {
 	if err != nil {
 		return err
 	}
+	req.Header.Set("Authorization", "Bearer "+session.Token)
 
 	res, err := session.DSAPIClient.HttpClient.Do(req)
 	if err != nil {
@@ -112,6 +114,8 @@ func (session *Session) ValidateCase(caseID string) error {
 	if err != nil {
 		return err
 	}
+
+	req.Header.Set("Authorization", "Bearer "+session.Token)
 
 	res, err := session.DSAPIClient.HttpClient.Do(req)
 	if err != nil {

@@ -54,6 +54,7 @@ func (session *Session) CreateShelf(args ...string) error {
 	}
 
 	req.Header.Set("Content-Type", "application/json")
+	req.Header.Set("Authorization", "Bearer "+session.Token)
 
 	res, err := session.DSAPIClient.HttpClient.Do(req)
 	if err != nil {
@@ -92,6 +93,8 @@ func (session *Session) GetShelves(args ...string) error {
 		return fmt.Errorf("error creating request: %v", err)
 	}
 
+	req.Header.Set("Authorization", "Bearer "+session.Token)
+
 	res, err := session.DSAPIClient.HttpClient.Do(req)
 	if err != nil {
 		return fmt.Errorf("error making request: %v", err)
@@ -126,6 +129,8 @@ func (session *Session) validateShelf(shelfID string) error {
 	if err != nil {
 		return err
 	}
+
+	req.Header.Set("Authorization", "Bearer "+session.Token)
 
 	res, err := session.DSAPIClient.HttpClient.Do(req)
 	if err != nil {
