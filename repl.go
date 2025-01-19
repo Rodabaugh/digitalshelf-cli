@@ -121,5 +121,10 @@ func getCommands() map[string]cliCommand {
 			description: "Remove an item or member",
 			callback:    commandRemove,
 		},
+		"search": {
+			name:        "search",
+			description: "Search for items/users",
+			callback:    commandSearch,
+		},
 	}
 }

@@ -71,3 +71,42 @@ func (session *Session) CreateUser(args ...string) error {
 
 	return nil
 }
+
+func (session *Session) SearchUsers(args ...string) error {
+	err := validateLoggedIn(session)
+	if err != nil {
+		return err
+	}
+
+	if len(args) < 1 {
+		return fmt.Errorf("please specify an email address to search for")
+	}
+
+	email := args[0]
+	url := session.BaseURL + "search/users?email=" + email
+
+	req, err := http.NewRequest("GET", url, nil)
+	if err != nil {
+		return fmt.Errorf("error creating request: %v", err)
+	}
+
+	req.Header.Add("Authorization", "Bearer "+session.Token)
+	res, err := session.DSAPIClient.HttpClient.Do(req)
+	if err != nil {
+		return fmt.Errorf("error making request: %v", err)
+	}
+
+	if res.StatusCode != http.StatusOK {
+		return fmt.Errorf("error searching for user: %v", res.Status)
+	}
+
+	resultUser := User{}
+
+	err = json.NewDecoder(res.Body).Decode(&resultUser)
+	if err != nil {
+		return fmt.Errorf("error decoding response: %v", err)
+	}
+
+	fmt.Printf("User found: %s (%s) ID: %s\n", resultUser.Name, resultUser.Email, resultUser.ID)
+	return nil
+}
