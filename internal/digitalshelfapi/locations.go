@@ -99,7 +99,7 @@ func (session *Session) CreateLocation(args ...string) error {
 		if err != nil {
 			return err
 		}
-		fmt.Printf("Location created successfully, ID: %s\n", response.ID)
+		fmt.Printf("Location created successfully. Be sure to join it with its ID.\n New Location ID: %s\n", response.ID)
 		return nil
 	} else {
 		return fmt.Errorf("error creating location")
@@ -187,4 +187,38 @@ func (session *Session) SetCurrentLocation(args ...string) error {
 	session.CurrentLocation = location.ID
 	fmt.Printf("Location set to: %s\n", args[0])
 	return nil
+}
+
+func (session *Session) RemoveLocationMember(args ...string) error {
+	err := validateLoggedIn(session)
+	if err != nil {
+		return err
+	}
+
+	if len(args) < 1 {
+		return fmt.Errorf("missing user ID")
+	}
+
+	url := session.BaseURL + "locations/" + session.CurrentLocation.String() + "/members/" + args[0]
+
+	fmt.Println(url)
+
+	req, err := http.NewRequest("DELETE", url, nil)
+	if err != nil {
+		return fmt.Errorf("error creating request: %v", err)
+	}
+	req.Header.Set("Authorization", "Bearer "+session.Token)
+
+	res, err := session.DSAPIClient.HttpClient.Do(req)
+	if err != nil {
+		return fmt.Errorf("error making request: %v", err)
+	}
+	defer res.Body.Close()
+
+	if res.StatusCode == http.StatusNoContent {
+		fmt.Println("Member removed successfully")
+		return nil
+	}
+
+	return fmt.Errorf("error removing member from location: %v", res.Status)
 }

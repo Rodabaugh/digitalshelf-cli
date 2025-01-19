@@ -116,5 +116,10 @@ func getCommands() map[string]cliCommand {
 			description: "Create your DigitalShelf account",
 			callback:    commandRegister,
 		},
+		"remove": {
+			name:        "remove",
+			description: "Remove an item or member",
+			callback:    commandRemove,
+		},
 	}
 }
