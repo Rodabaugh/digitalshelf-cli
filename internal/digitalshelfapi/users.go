@@ -5,65 +5,7 @@ import (
 	"encoding/json"
 	"fmt"
 	"net/http"
-
-	"github.com/google/uuid"
 )
-
-func (session *Session) InviteUser(args ...string) error {
-	err := validateLoggedIn(session)
-	if err != nil {
-		return err
-	}
-
-	if len(args) < 1 {
-		return fmt.Errorf("please specify a user_id")
-	}
-
-	userID := args[0]
-	if _, err := uuid.Parse(userID); err != nil {
-		return fmt.Errorf("invalid user_id: %v", err)
-	}
-
-	if session.CurrentLocation == uuid.Nil {
-		return fmt.Errorf("please set a current location first")
-	}
-
-	url := session.BaseURL + "locations/" + session.CurrentLocation.String() + "/invites"
-
-	type parameters struct {
-		UserID string `json:"user_id"`
-	}
-
-	params := parameters{
-		UserID: userID,
-	}
-
-	reqBody, err := json.Marshal(params)
-	if err != nil {
-		return fmt.Errorf("error marshalling request body: %v", err)
-	}
-
-	req, err := http.NewRequest("POST", url, bytes.NewReader(reqBody))
-	if err != nil {
-		return fmt.Errorf("error creating request: %v", err)
-	}
-
-	req.Header.Set("Content-Type", "application/json")
-	req.Header.Set("Authorization", "Bearer "+session.Token)
-
-	res, err := session.DSAPIClient.HttpClient.Do(req)
-	if err != nil {
-		return fmt.Errorf("error making request: %v", err)
-	}
-
-	if res.StatusCode != http.StatusCreated {
-		return fmt.Errorf("error inviting user: %v", res.Status)
-	}
-
-	fmt.Println("User invited successfully")
-
-	return nil
-}
 
 func (session *Session) CreateUser(args ...string) error {
 	err := validateLoggedIn(session)

@@ -16,6 +16,11 @@ func commandRemove(session *digitalshelfapi.Session, args ...string) error {
 			return fmt.Errorf("please specify a user ID")
 		}
 		return session.RemoveLocationMember(args[1])
+	case "invite":
+		if len(args) < 2 {
+			return fmt.Errorf("please specify a user ID")
+		}
+		return session.RemoveUserInvite(args[1])
 	default:
 		return fmt.Errorf("unknown remove command: %s", args[0])
 	}
