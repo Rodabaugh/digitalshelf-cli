@@ -51,3 +51,16 @@ type Movie struct {
 	ShelfID     uuid.UUID `json:"shelf_id"`
 	ReleaseDate time.Time `json:"release_date"`
 }
+
+type Show struct {
+	ID          uuid.UUID `json:"id"`
+	Title       string    `json:"title"`
+	Season      int       `json:"season"`
+	Genre       string    `json:"genre"`
+	Actors      string    `json:"actors"`
+	Writer      string    `json:"writer"`
+	Director    string    `json:"director"`
+	Barcode     string    `json:"barcode"`
+	ShelfID     uuid.UUID `json:"shelf_id"`
+	ReleaseDate time.Time `json:"release_date"`
+}

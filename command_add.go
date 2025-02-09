@@ -25,6 +25,15 @@ func commandAdd(session *digitalshelfapi.Session, args ...string) error {
 		}
 
 		return addMovie(session, shelfID, args[2])
+	case "show":
+		if len(args) < 3 {
+			return fmt.Errorf("please specify a shelf ID and show barcode")
+		}
+		shelfID, err := uuid.Parse(args[1])
+		if err != nil {
+			return fmt.Errorf("invalid shelf ID: %v", err)
+		}
+		return addShow(session, shelfID, args[2])
 	case "moviebulk":
 		if len(args) < 3 {
 			return fmt.Errorf("please specify a shelf ID and movie barcode")
@@ -113,6 +122,85 @@ func getMovieDetails() (digitalshelfapi.Movie, error) {
 	}
 
 	return movie, nil
+}
+
+func addShow(session *digitalshelfapi.Session, shelfID uuid.UUID, barcode string) error {
+	show, err := session.LookupShowBarcode(barcode)
+	if err == nil {
+		fmt.Printf("Show found!\n\n")
+		fmt.Printf("Title: %s\n", show.Title)
+		fmt.Printf("Season: %d\n", show.Season)
+		fmt.Printf("Genre: %s\n", show.Genre)
+		fmt.Printf("Actors: %s\n", show.Actors)
+		fmt.Printf("Writer: %s\n", show.Writer)
+		fmt.Printf("Director: %s\n", show.Director)
+		fmt.Printf("Release Date: %s\n", show.ReleaseDate)
+		fmt.Println("Do you want to add this show to the shelf? (y/n)")
+		var answer string
+		fmt.Scanln(&answer)
+		if answer != "y" {
+			return fmt.Errorf("show not added to the shelf")
+		}
+	}
+
+	if err != nil && err.Error() == "show not found" {
+		fmt.Printf("This barcode does not exist in the database. Please enter it manually.\n\n")
+		show, err = getShowDetails()
+		if err != nil {
+			return fmt.Errorf("error getting show details: %v", err)
+		}
+		show.Barcode = barcode
+	}
+
+	err = session.AddShow(shelfID, show)
+	if err != nil {
+		return fmt.Errorf("error adding show to shelf: %v", err)
+	}
+
+	return err
+}
+
+func getShowDetails() (digitalshelfapi.Show, error) {
+	scanner := bufio.NewScanner(os.Stdin)
+	fmt.Printf("Entering New Show\n----------------------------\n")
+	var title, genre, actors, writer, director, releaseDateStr string
+	var season int
+	fmt.Print("Title: ")
+	scanner.Scan()
+	title = scanner.Text()
+	fmt.Print("Season: ")
+	fmt.Scanln(&season)
+	fmt.Print("Genre: ")
+	scanner.Scan()
+	genre = scanner.Text()
+	fmt.Print("Actors: ")
+	scanner.Scan()
+	actors = scanner.Text()
+	fmt.Print("Writer: ")
+	scanner.Scan()
+	writer = scanner.Text()
+	fmt.Print("Director: ")
+	scanner.Scan()
+	director = scanner.Text()
+	fmt.Print("Release Date (YYYY-MM-DD): ")
+	scanner.Scan()
+	releaseDateStr = scanner.Text()
+	releaseDate, err := time.Parse("2006-01-02", releaseDateStr)
+	if err != nil {
+		return digitalshelfapi.Show{}, fmt.Errorf("error parsing release date: %v", err)
+	}
+
+	show := digitalshelfapi.Show{
+		Title:       title,
+		Season:      season,
+		Genre:       genre,
+		Actors:      actors,
+		Writer:      writer,
+		Director:    director,
+		ReleaseDate: releaseDate,
+	}
+
+	return show, nil
 }
 
 func benchmarkCreateMovie(session *digitalshelfapi.Session, shelfID uuid.UUID, barcode string) error {

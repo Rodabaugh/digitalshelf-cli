@@ -33,6 +33,16 @@ func commandGet(session *digitalshelfapi.Session, args ...string) error {
 			return fmt.Errorf("please specify a movie ID")
 		}
 		return session.GetMovie(args[1])
+	case "shows":
+		if len(args) < 2 {
+			return fmt.Errorf("please specify a shelf ID")
+		}
+		return session.GetShows(args[1])
+	case "show":
+		if len(args) < 2 {
+			return fmt.Errorf("please specify a show ID")
+		}
+		return session.GetShow(args[1])
 	case "location":
 		return getLocation(session, args[1:]...)
 	default:
@@ -51,6 +61,8 @@ func getLocation(session *digitalshelfapi.Session, args ...string) error {
 	switch args[0] {
 	case "movies":
 		return session.GetAllLocationMovies(session.CurrentLocation.String())
+	case "shows":
+		return session.GetAllLocationShows(session.CurrentLocation.String())
 	default:
 		return fmt.Errorf("unknown get command: %s", args[0])
 	}
