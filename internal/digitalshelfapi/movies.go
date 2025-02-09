@@ -263,3 +263,65 @@ func (session *Session) GetMovie(args ...string) error {
 
 	return nil
 }
+
+func (session *Session) SearchMovies(args ...string) error {
+	err := validateLoggedIn(session)
+	if err != nil {
+		return err
+	}
+
+	if len(args) < 1 {
+		return fmt.Errorf("please provide a search query")
+	}
+
+	if session.CurrentLocation == uuid.Nil {
+		return fmt.Errorf("no location set, please set a location first")
+	}
+
+	query := args[0]
+
+	url := session.BaseURL + "search/movies"
+
+	reqBody, err := json.Marshal(map[string]string{
+		"query":       query,
+		"location_id": session.CurrentLocation.String(),
+	})
+	if err != nil {
+		return fmt.Errorf("error marshalling request: %v", err)
+	}
+
+	req, err := http.NewRequest("GET", url, bytes.NewBuffer(reqBody))
+	if err != nil {
+		return fmt.Errorf("error creating request: %v", err)
+	}
+
+	req.Header.Set("Content-Type", "application/json")
+	req.Header.Set("Authorization", "Bearer "+session.Token)
+
+	res, err := session.DSAPIClient.HttpClient.Do(req)
+	if err != nil {
+		return fmt.Errorf("error making request: %v", err)
+	}
+	defer res.Body.Close()
+
+	if res.StatusCode != http.StatusOK {
+		return fmt.Errorf("error searching movies: %v", res.Status)
+	}
+
+	var movies []Movie
+	if err := json.NewDecoder(res.Body).Decode(&movies); err != nil {
+		return fmt.Errorf("error decoding response: %v", err)
+	}
+
+	for _, movie := range movies {
+		fmt.Printf("Title: %s\n", movie.Title)
+		fmt.Printf("Genre: %s\n", movie.Genre)
+		fmt.Printf("Actors: %s\n", movie.Actors)
+		fmt.Printf("Writer: %s\n", movie.Writer)
+		fmt.Printf("Director: %s\n", movie.Director)
+		fmt.Printf("Release Date: %s\n", movie.ReleaseDate)
+		fmt.Println()
+	}
+
+	return nil
+}
