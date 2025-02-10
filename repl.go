@@ -49,8 +49,39 @@ func startRepl(session *digitalshelfapi.Session) {
 }
 
 func cleanInput(text string) []string {
-	output := strings.ToLower(text)
-	words := strings.Fields(output)
+	var words []string
+	var currentWord strings.Builder
+	inQuotes := false
+
+	for _, char := range text {
+		switch char {
+		case ' ':
+			if inQuotes {
+				currentWord.WriteRune(char)
+			} else if currentWord.Len() > 0 {
+				words = append(words, currentWord.String())
+				currentWord.Reset()
+			}
+		case '"':
+			inQuotes = !inQuotes
+			if !inQuotes && currentWord.Len() > 0 {
+				words = append(words, currentWord.String())
+				currentWord.Reset()
+			}
+		default:
+			currentWord.WriteRune(char)
+		}
+	}
+
+	if currentWord.Len() > 0 {
+		words = append(words, currentWord.String())
+	}
+	if len(words) > 0 {
+		words[0] = strings.ToLower(words[0])
+	}
+	if len(words) > 1 {
+		words[1] = strings.ToLower(words[1])
+	}
 	return words
 }
 
