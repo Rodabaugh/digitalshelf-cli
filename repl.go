@@ -157,5 +157,10 @@ func getCommands() map[string]cliCommand {
 			description: "Search for items/users",
 			callback:    commandSearch,
 		},
+		"update": {
+			name:        "update",
+			description: "Update an item",
+			callback:    commandUpdate,
+		},
 	}
 }

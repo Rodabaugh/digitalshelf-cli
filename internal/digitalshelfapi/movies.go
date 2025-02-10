@@ -154,6 +154,7 @@ func (session *Session) GetMovies(args ...string) error {
 	}
 
 	for _, movie := range movies {
+		fmt.Printf("ID: %s\n", movie.ID)
 		fmt.Printf("Title: %s\n", movie.Title)
 		fmt.Printf("Genre: %s\n", movie.Genre)
 		fmt.Printf("Actors: %s\n", movie.Actors)
@@ -324,4 +325,57 @@ func (session *Session) SearchMovies(args ...string) error {
 	}
 
 	return nil
+}
+
+func (session *Session) UpdateMovieShelf(args ...string) error {
+	err := validateLoggedIn(session)
+	if err != nil {
+		return err
+	}
+
+	if len(args) < 2 {
+		return fmt.Errorf("please provide a movie ID and a shelf ID")
+	}
+
+	movieID, err := uuid.Parse(args[0])
+	if err != nil {
+		return fmt.Errorf("invalid movie ID: %v", err)
+	}
+
+	shelfID, err := uuid.Parse(args[1])
+	if err != nil {
+		return fmt.Errorf("invalid shelf ID: %v", err)
+	}
+
+	err = session.validateShelf(shelfID.String())
+	if err != nil {
+		return err
+	}
+
+	url := session.BaseURL + "movies/" + movieID.String()
+
+	reqBody, err := json.Marshal(map[string]string{"shelf_id": shelfID.String()})
+	if err != nil {
+		return fmt.Errorf("error marshalling request: %v", err)
+	}
+
+	req, err := http.NewRequest("PUT", url, bytes.NewBuffer(reqBody))
+	if err != nil {
+		return fmt.Errorf("error creating request: %v", err)
+	}
+
+	req.Header.Set("Authorization", "Bearer "+session.Token)
+
+	res, err := session.DSAPIClient.HttpClient.Do(req)
+	if err != nil {
+		return fmt.Errorf("error making request: %v", err)
+	}
+	defer res.Body.Close()
+
+	if res.StatusCode == http.StatusOK {
+		fmt.Println("Movie shelf updated successfully")
+		return nil
+	}
+
+	return fmt.Errorf("error updating movie shelf: %v", res.Status)
 }
