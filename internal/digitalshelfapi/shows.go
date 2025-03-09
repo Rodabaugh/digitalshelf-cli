@@ -51,11 +51,12 @@ func (session *Session) LookupShowBarcode(args ...string) (Show, error) {
 	}
 	fmt.Println("Show found")
 	fmt.Printf("Title: %s\n", show.Title)
-	fmt.Printf("Season: %d\n", show.Season)
+	fmt.Printf("Season: %s\n", show.Season)
 	fmt.Printf("Genre: %s\n", show.Genre)
 	fmt.Printf("Actors: %s\n", show.Actors)
 	fmt.Printf("Writer: %s\n", show.Writer)
 	fmt.Printf("Director: %s\n", show.Director)
+	fmt.Printf("Format: %s\n", show.Format)
 	fmt.Printf("Release Date: %s\n", show.ReleaseDate)
 
 	return show, nil
@@ -69,12 +70,13 @@ func (session *Session) AddShow(shelfID uuid.UUID, show Show) error {
 
 	type parameters struct {
 		Title       string    `json:"title"`
-		Season      int       `json:"season"`
+		Season      string    `json:"season"`
 		Genre       string    `json:"genre"`
 		Actors      string    `json:"actors"`
 		Writer      string    `json:"writer"`
 		Director    string    `json:"director"`
 		Barcode     string    `json:"barcode"`
+		Format      string    `json:"format"`
 		ShelfID     uuid.UUID `json:"shelf_id"`
 		ReleaseDate time.Time `json:"release_date"`
 	}
@@ -87,6 +89,7 @@ func (session *Session) AddShow(shelfID uuid.UUID, show Show) error {
 		Writer:      show.Writer,
 		Director:    show.Director,
 		Barcode:     show.Barcode,
+		Format:      show.Format,
 		ShelfID:     shelfID,
 		ReleaseDate: show.ReleaseDate,
 	}
@@ -158,11 +161,12 @@ func (session *Session) GetShows(args ...string) error {
 
 	for _, show := range shows {
 		fmt.Printf("Title: %s\n", show.Title)
-		fmt.Printf("Season: %d\n", show.Season)
+		fmt.Printf("Season: %s\n", show.Season)
 		fmt.Printf("Genre: %s\n", show.Genre)
 		fmt.Printf("Actors: %s\n", show.Actors)
 		fmt.Printf("Writer: %s\n", show.Writer)
 		fmt.Printf("Director: %s\n", show.Director)
+		fmt.Printf("Format: %s\n", show.Format)
 		fmt.Printf("Release Date: %s\n", show.ReleaseDate)
 		fmt.Println()
 	}
@@ -212,7 +216,8 @@ func (session *Session) GetAllLocationShows(args ...string) error {
 	for _, show := range shows {
 		fmt.Printf("ID: %s\n", show.ID)
 		fmt.Printf("Title: %s\n", show.Title)
-		fmt.Printf("Season: %d\n", show.Season)
+		fmt.Printf("Season: %s\n", show.Season)
+		fmt.Printf("Format: %s\n", show.Format)
 		fmt.Printf("Release Date: %s\n", show.ReleaseDate)
 		fmt.Println()
 	}
@@ -259,13 +264,14 @@ func (session *Session) GetShow(args ...string) error {
 	}
 
 	fmt.Printf("Title: %s\n", show.Title)
-	fmt.Printf("Season: %d\n", show.Season)
+	fmt.Printf("Season: %s\n", show.Season)
 	fmt.Printf("Genre: %s\n", show.Genre)
 	fmt.Printf("Actors: %s\n", show.Actors)
 	fmt.Printf("Writer: %s\n", show.Writer)
 	fmt.Printf("Director: %s\n", show.Director)
 	fmt.Printf("Release Date: %s\n", show.ReleaseDate)
 	fmt.Printf("Barcode: %s\n", show.Barcode)
+	fmt.Printf("Format: %s\n", show.Format)
 
 	return nil
 }
@@ -321,11 +327,12 @@ func (session *Session) SearchShows(args ...string) error {
 
 	for _, show := range shows {
 		fmt.Printf("Title: %s\n", show.Title)
-		fmt.Printf("Season: %d\n", show.Season)
+		fmt.Printf("Season: %s\n", show.Season)
 		fmt.Printf("Genre: %s\n", show.Genre)
 		fmt.Printf("Actors: %s\n", show.Actors)
 		fmt.Printf("Writer: %s\n", show.Writer)
 		fmt.Printf("Director: %s\n", show.Director)
+		fmt.Printf("Format: %s\n", show.Format)
 		fmt.Printf("Release Date: %s\n", show.ReleaseDate)
 		fmt.Println()
 	}
