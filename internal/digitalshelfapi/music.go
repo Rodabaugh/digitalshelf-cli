@@ -154,6 +154,7 @@ func (session *Session) GetMusic(args ...string) error {
 		fmt.Printf("Title: %s\n", music.Title)
 		fmt.Printf("Artist: %s\n", music.Artist)
 		fmt.Printf("Genre: %s\n", music.Genre)
+		fmt.Printf("Format: %s\n", music.Format)
 		fmt.Printf("Release Date: %s\n", music.ReleaseDate)
 		fmt.Println()
 	}

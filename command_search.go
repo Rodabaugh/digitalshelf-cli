@@ -31,6 +31,11 @@ func commandSearch(session *digitalshelfapi.Session, args ...string) error {
 			return fmt.Errorf("please specify a search term")
 		}
 		return session.SearchBooks(args[1])
+	case "music":
+		if len(args) < 2 {
+			return fmt.Errorf("please specify a search term")
+		}
+		return session.SearchMusic(args[1])
 	default:
 		return fmt.Errorf("unknown search command: %s", args[0])
 	}
