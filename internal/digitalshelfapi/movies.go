@@ -55,6 +55,7 @@ func (session *Session) LookupMovieBarcode(args ...string) (Movie, error) {
 	fmt.Printf("Actors: %s\n", movie.Actors)
 	fmt.Printf("Writer: %s\n", movie.Writer)
 	fmt.Printf("Director: %s\n", movie.Director)
+	fmt.Printf("Format: %s\n", movie.Format)
 	fmt.Printf("Release Date: %s\n", movie.ReleaseDate)
 
 	return movie, nil
@@ -73,6 +74,7 @@ func (session *Session) AddMovie(shelfID uuid.UUID, movie Movie) error {
 		Writer      string    `json:"writer"`
 		Director    string    `json:"director"`
 		Barcode     string    `json:"barcode"`
+		Format      string    `json:"format"`
 		ShelfID     uuid.UUID `json:"shelf_id"`
 		ReleaseDate time.Time `json:"release_date"`
 	}
@@ -84,6 +86,7 @@ func (session *Session) AddMovie(shelfID uuid.UUID, movie Movie) error {
 		Writer:      movie.Writer,
 		Director:    movie.Director,
 		Barcode:     movie.Barcode,
+		Format:      movie.Format,
 		ShelfID:     shelfID,
 		ReleaseDate: movie.ReleaseDate,
 	}
@@ -160,6 +163,7 @@ func (session *Session) GetMovies(args ...string) error {
 		fmt.Printf("Actors: %s\n", movie.Actors)
 		fmt.Printf("Writer: %s\n", movie.Writer)
 		fmt.Printf("Director: %s\n", movie.Director)
+		fmt.Printf("Format: %s\n", movie.Format)
 		fmt.Printf("Release Date: %s\n", movie.ReleaseDate)
 		fmt.Println()
 	}
@@ -210,6 +214,7 @@ func (session *Session) GetAllLocationMovies(args ...string) error {
 		fmt.Printf("ID: %s\n", movie.ID)
 		fmt.Printf("Title: %s\n", movie.Title)
 		fmt.Printf("Release Date: %s\n", movie.ReleaseDate)
+		fmt.Printf("Format: %s\n", movie.Format)
 		fmt.Println()
 	}
 	return nil
@@ -261,6 +266,7 @@ func (session *Session) GetMovie(args ...string) error {
 	fmt.Printf("Director: %s\n", movie.Director)
 	fmt.Printf("Release Date: %s\n", movie.ReleaseDate)
 	fmt.Printf("Barcode: %s\n", movie.Barcode)
+	fmt.Printf("Format: %s\n", movie.Format)
 
 	return nil
 }
@@ -321,6 +327,7 @@ func (session *Session) SearchMovies(args ...string) error {
 		fmt.Printf("Writer: %s\n", movie.Writer)
 		fmt.Printf("Director: %s\n", movie.Director)
 		fmt.Printf("Release Date: %s\n", movie.ReleaseDate)
+		fmt.Printf("Format: %s\n", movie.Format)
 		fmt.Println()
 	}
 
