@@ -43,6 +43,15 @@ func commandAdd(session *digitalshelfapi.Session, args ...string) error {
 			return fmt.Errorf("invalid shelf ID: %v", err)
 		}
 		return addBook(session, shelfID, args[2])
+	case "music":
+		if len(args) < 3 {
+			return fmt.Errorf("please specify a shelf ID and music barcode")
+		}
+		shelfID, err := uuid.Parse(args[1])
+		if err != nil {
+			return fmt.Errorf("invalid shelf ID: %v", err)
+		}
+		return addMusic(session, shelfID, args[2])
 	case "moviebulk":
 		if len(args) < 3 {
 			return fmt.Errorf("please specify a shelf ID and movie barcode")
@@ -273,6 +282,75 @@ func getBookDetails() (digitalshelfapi.Book, error) {
 	}
 
 	return book, nil
+}
+
+func addMusic(session *digitalshelfapi.Session, shelfID uuid.UUID, barcode string) error {
+	music, err := session.LookupMusicBarcode(barcode)
+	if err == nil {
+		fmt.Printf("Music found!\n\n")
+		fmt.Printf("Title: %s\n", music.Title)
+		fmt.Printf("Artist: %s\n", music.Artist)
+		fmt.Printf("Genre: %s\n", music.Genre)
+		fmt.Printf("Format: %s\n", music.Format)
+		fmt.Printf("Release Date: %s\n", music.ReleaseDate)
+		fmt.Println("Do you want to add this music to the shelf? (y/n)")
+		var answer string
+		fmt.Scanln(&answer)
+		if answer != "y" {
+			return fmt.Errorf("music not added to the shelf")
+		}
+	}
+
+	if err != nil && err.Error() == "music not found" {
+		fmt.Printf("This barcode does not exist in the database. Please enter it manually.\n\n")
+		music, err = getMusicDetails()
+		if err != nil {
+			return fmt.Errorf("error getting music details: %v", err)
+		}
+		music.Barcode = barcode
+	}
+
+	err = session.AddMusic(shelfID, music)
+	if err != nil {
+		return fmt.Errorf("error adding music to shelf: %v", err)
+	}
+
+	return err
+}
+
+func getMusicDetails() (digitalshelfapi.Music, error) {
+	scanner := bufio.NewScanner(os.Stdin)
+	fmt.Printf("Entering New Music\n----------------------------\n")
+	var title, artist, genre, format, releaseDateStr string
+	fmt.Print("Title: ")
+	scanner.Scan()
+	title = scanner.Text()
+	fmt.Print("Artist: ")
+	scanner.Scan()
+	artist = scanner.Text()
+	fmt.Print("Genre: ")
+	scanner.Scan()
+	genre = scanner.Text()
+	fmt.Print("Format: ")
+	scanner.Scan()
+	format = scanner.Text()
+	fmt.Print("Release Date (YYYY-MM-DD): ")
+	scanner.Scan()
+	releaseDateStr = scanner.Text()
+	releaseDate, err := time.Parse("2006-01-02", releaseDateStr)
+	if err != nil {
+		return digitalshelfapi.Music{}, fmt.Errorf("error parsing release date: %v", err)
+	}
+
+	music := digitalshelfapi.Music{
+		Title:       title,
+		Artist:      artist,
+		Genre:       genre,
+		Format:      format,
+		ReleaseDate: releaseDate,
+	}
+
+	return music, nil
 }
 
 func benchmarkCreateMovie(session *digitalshelfapi.Session, shelfID uuid.UUID, barcode string) error {

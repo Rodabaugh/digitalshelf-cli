@@ -85,7 +85,7 @@ type Music struct {
 	Barcode     string    `json:"barcode"`
 	Format      string    `json:"format"`
 	ShelfID     uuid.UUID `json:"shelf_id"`
-	ReleaseDAte time.Time `json:"release_date"`
+	ReleaseDate time.Time `json:"release_date"`
 	CreatedAt   time.Time `json:"created_at"`
 	UpdatedAt   time.Time `json:"updated_at"`
 }

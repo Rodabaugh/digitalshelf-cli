@@ -54,7 +54,7 @@ func (session *Session) LookupMusicBarcode(args ...string) (Music, error) {
 	fmt.Printf("Artist: %s\n", music.Artist)
 	fmt.Printf("Genre: %s\n", music.Genre)
 	fmt.Printf("Format: %s\n", music.Format)
-	fmt.Printf("Release Date: %s\n", music.ReleaseDAte)
+	fmt.Printf("Release Date: %s\n", music.ReleaseDate)
 
 	return music, nil
 }
@@ -72,7 +72,7 @@ func (session *Session) AddMusic(shelfID uuid.UUID, music Music) error {
 		Barcode     string    `json:"barcode"`
 		Format      string    `json:"format"`
 		ShelfID     uuid.UUID `json:"shelf_id"`
-		ReleaseDAte time.Time `json:"release_date"`
+		ReleaseDate time.Time `json:"release_date"`
 	}
 
 	params := parameters{
@@ -82,7 +82,7 @@ func (session *Session) AddMusic(shelfID uuid.UUID, music Music) error {
 		Barcode:     music.Barcode,
 		Format:      music.Format,
 		ShelfID:     shelfID,
-		ReleaseDAte: music.ReleaseDAte,
+		ReleaseDate: music.ReleaseDate,
 	}
 
 	url := session.BaseURL + "music"
@@ -154,7 +154,7 @@ func (session *Session) GetMusic(args ...string) error {
 		fmt.Printf("Title: %s\n", music.Title)
 		fmt.Printf("Artist: %s\n", music.Artist)
 		fmt.Printf("Genre: %s\n", music.Genre)
-		fmt.Printf("Release Date: %s\n", music.ReleaseDAte)
+		fmt.Printf("Release Date: %s\n", music.ReleaseDate)
 		fmt.Println()
 	}
 
@@ -206,7 +206,7 @@ func (session *Session) GetAllLocationMusic(args ...string) error {
 		fmt.Printf("Artist: %s\n", music.Artist)
 		fmt.Printf("Genre: %s\n", music.Genre)
 		fmt.Printf("Format: %s\n", music.Format)
-		fmt.Printf("Release Date: %s\n", music.ReleaseDAte)
+		fmt.Printf("Release Date: %s\n", music.ReleaseDate)
 		fmt.Println()
 	}
 	return nil
@@ -254,7 +254,7 @@ func (session *Session) GetMusicByID(args ...string) error {
 	fmt.Printf("Title: %s\n", music.Title)
 	fmt.Printf("Artist: %s\n", music.Artist)
 	fmt.Printf("Genre: %s\n", music.Genre)
-	fmt.Printf("Release Date: %s\n", music.ReleaseDAte)
+	fmt.Printf("Release Date: %s\n", music.ReleaseDate)
 	fmt.Printf("Format: %s\n", music.Format)
 	fmt.Printf("Barcode: %s\n", music.Barcode)
 
@@ -315,7 +315,7 @@ func (session *Session) SearchMusic(args ...string) error {
 		fmt.Printf("Artist: %s\n", music.Artist)
 		fmt.Printf("Genre: %s\n", music.Genre)
 		fmt.Printf("Format: %s\n", music.Format)
-		fmt.Printf("Release Date: %s\n", music.ReleaseDAte)
+		fmt.Printf("Release Date: %s\n", music.ReleaseDate)
 		fmt.Println()
 	}
 
