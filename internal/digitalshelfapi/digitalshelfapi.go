@@ -76,3 +76,16 @@ type Book struct {
 	CreatedAt       time.Time `json:"created_at"`
 	UpdatedAt       time.Time `json:"updated_at"`
 }
+
+type Music struct {
+	ID          uuid.UUID `json:"id"`
+	Title       string    `json:"title"`
+	Artist      string    `json:"artist"`
+	Genre       string    `json:"genre"`
+	Barcode     string    `json:"barcode"`
+	Format      string    `json:"format"`
+	ShelfID     uuid.UUID `json:"shelf_id"`
+	ReleaseDAte time.Time `json:"release_date"`
+	CreatedAt   time.Time `json:"created_at"`
+	UpdatedAt   time.Time `json:"updated_at"`
+}
