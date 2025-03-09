@@ -64,3 +64,15 @@ type Show struct {
 	ShelfID     uuid.UUID `json:"shelf_id"`
 	ReleaseDate time.Time `json:"release_date"`
 }
+
+type Book struct {
+	ID              uuid.UUID `json:"id"`
+	Title           string    `json:"title"`
+	Author          string    `json:"author"`
+	Genre           string    `json:"genre"`
+	Barcode         string    `json:"barcode"`
+	ShelfID         uuid.UUID `json:"shelf_id"`
+	PublicationDate time.Time `json:"publication_date"`
+	CreatedAt       time.Time `json:"created_at"`
+	UpdatedAt       time.Time `json:"updated_at"`
+}

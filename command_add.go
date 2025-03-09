@@ -34,6 +34,15 @@ func commandAdd(session *digitalshelfapi.Session, args ...string) error {
 			return fmt.Errorf("invalid shelf ID: %v", err)
 		}
 		return addShow(session, shelfID, args[2])
+	case "book":
+		if len(args) < 3 {
+			return fmt.Errorf("please specify a shelf ID and book barcode")
+		}
+		shelfID, err := uuid.Parse(args[1])
+		if err != nil {
+			return fmt.Errorf("invalid shelf ID: %v", err)
+		}
+		return addBook(session, shelfID, args[2])
 	case "moviebulk":
 		if len(args) < 3 {
 			return fmt.Errorf("please specify a shelf ID and movie barcode")
@@ -84,7 +93,6 @@ func addMovie(session *digitalshelfapi.Session, shelfID uuid.UUID, barcode strin
 	return err
 }
 
-// There is an issue with this fuction that does not handle spaces in the input. This needs to be fixed.
 func getMovieDetails() (digitalshelfapi.Movie, error) {
 	scanner := bufio.NewScanner(os.Stdin)
 	fmt.Printf("Entering New Movie\n----------------------------\n")
@@ -201,6 +209,70 @@ func getShowDetails() (digitalshelfapi.Show, error) {
 	}
 
 	return show, nil
+}
+
+func addBook(session *digitalshelfapi.Session, shelfID uuid.UUID, barcode string) error {
+	book, err := session.LookupBookBarcode(barcode)
+	if err == nil {
+		fmt.Printf("Book found!\n\n")
+		fmt.Printf("Title: %s\n", book.Title)
+		fmt.Printf("Author: %s\n", book.Author)
+		fmt.Printf("Genre: %s\n", book.Genre)
+		fmt.Printf("Publication Date: %s\n", book.PublicationDate)
+		fmt.Println("Do you want to add this book to the shelf? (y/n)")
+		var answer string
+		fmt.Scanln(&answer)
+		if answer != "y" {
+			return fmt.Errorf("book not added to the shelf")
+		}
+	}
+
+	if err != nil && err.Error() == "book not found" {
+		fmt.Printf("This barcode does not exist in the database. Please enter it manually.\n\n")
+		book, err = getBookDetails()
+		if err != nil {
+			return fmt.Errorf("error getting book details: %v", err)
+		}
+		book.Barcode = barcode
+	}
+
+	err = session.AddBook(shelfID, book)
+	if err != nil {
+		return fmt.Errorf("error adding book to shelf: %v", err)
+	}
+
+	return err
+}
+
+func getBookDetails() (digitalshelfapi.Book, error) {
+	scanner := bufio.NewScanner(os.Stdin)
+	fmt.Printf("Entering New Book\n----------------------------\n")
+	var title, author, genre, publicationDateStr string
+	fmt.Print("Title: ")
+	scanner.Scan()
+	title = scanner.Text()
+	fmt.Print("Author: ")
+	scanner.Scan()
+	author = scanner.Text()
+	fmt.Print("Genre: ")
+	scanner.Scan()
+	genre = scanner.Text()
+	fmt.Print("Publication Date (YYYY-MM-DD): ")
+	scanner.Scan()
+	publicationDateStr = scanner.Text()
+	publicationDate, err := time.Parse("2006-01-02", publicationDateStr)
+	if err != nil {
+		return digitalshelfapi.Book{}, fmt.Errorf("error parsing publication date: %v", err)
+	}
+
+	book := digitalshelfapi.Book{
+		Title:           title,
+		Author:          author,
+		Genre:           genre,
+		PublicationDate: publicationDate,
+	}
+
+	return book, nil
 }
 
 func benchmarkCreateMovie(session *digitalshelfapi.Session, shelfID uuid.UUID, barcode string) error {
