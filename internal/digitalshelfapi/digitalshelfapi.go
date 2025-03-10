@@ -20,6 +20,7 @@ type Session struct {
 	Token           string
 	RefreshToken    string
 	CurrentLocation uuid.UUID
+	CurrentShelf    uuid.UUID
 }
 
 type User struct {

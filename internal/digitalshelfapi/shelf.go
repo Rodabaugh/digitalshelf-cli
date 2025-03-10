@@ -149,3 +149,36 @@ func (session *Session) validateShelf(shelfID string) error {
 		return fmt.Errorf("shelf not found")
 	}
 }
+
+func (session *Session) SetCurrentShelf(args ...string) error {
+	err := validateLoggedIn(session)
+	if err != nil {
+		return err
+	}
+
+	if len(args) < 1 {
+		return fmt.Errorf("please specify a shelf ID")
+	}
+
+	shelfIDStr := args[0]
+	shelfID, err := uuid.Parse(shelfIDStr)
+	if err != nil {
+		return fmt.Errorf("invalid shelf ID")
+	}
+
+	// Validate the shelf ID
+	err = session.validateShelf(shelfIDStr)
+	if err != nil {
+		return fmt.Errorf("invalid shelf ID: %v", err)
+	}
+
+	err = session.validateShelf(shelfIDStr)
+	if err != nil {
+		return err
+	}
+
+	session.CurrentShelf = shelfID
+	fmt.Printf("Current shelf set to %s\n", shelfID)
+
+	return nil
+}

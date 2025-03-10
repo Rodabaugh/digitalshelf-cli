@@ -13,6 +13,8 @@ func commandSet(session *digitalshelfapi.Session, args ...string) error {
 	switch args[0] {
 	case "location":
 		return session.SetCurrentLocation(args[1])
+	case "shelf":
+		return session.SetCurrentShelf(args[1])
 	default:
 		return fmt.Errorf("unknown set command: %s", args[0])
 	}
