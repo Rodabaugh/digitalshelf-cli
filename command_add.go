@@ -11,57 +11,43 @@ import (
 )
 
 func commandAdd(session *digitalshelfapi.Session, args ...string) error {
-	if len(args) == 0 {
-		return fmt.Errorf("please specify what you want to set")
+	if len(args) < 2 {
+		return fmt.Errorf("please specify what you want to add and a barcode")
 	}
+
+	var shelfID uuid.UUID
+	var err error
+
+	if len(args) == 2 {
+		if session.CurrentShelf != uuid.Nil {
+			shelfID = session.CurrentShelf
+		} else {
+			fmt.Print("Please enter a shelf ID: ")
+			var shelfIDStr string
+			fmt.Scanln(&shelfIDStr)
+			shelfID, err = uuid.Parse(shelfIDStr)
+			if err != nil {
+				return fmt.Errorf("invalid shelf ID: %v", err)
+			}
+		}
+	} else {
+		shelfID, err = uuid.Parse(args[1])
+		if err != nil {
+			return fmt.Errorf("invalid shelf ID: %v", err)
+		}
+	}
+
 	switch args[0] {
 	case "movie":
-		if len(args) < 3 {
-			return fmt.Errorf("please specify a shelf ID and movie barcode")
-		}
-		shelfID, err := uuid.Parse(args[1])
-		if err != nil {
-			return fmt.Errorf("invalid shelf ID: %v", err)
-		}
-
-		return addMovie(session, shelfID, args[2])
+		return addMovie(session, shelfID, args[1])
 	case "show":
-		if len(args) < 3 {
-			return fmt.Errorf("please specify a shelf ID and show barcode")
-		}
-		shelfID, err := uuid.Parse(args[1])
-		if err != nil {
-			return fmt.Errorf("invalid shelf ID: %v", err)
-		}
-		return addShow(session, shelfID, args[2])
+		return addShow(session, shelfID, args[1])
 	case "book":
-		if len(args) < 3 {
-			return fmt.Errorf("please specify a shelf ID and book barcode")
-		}
-		shelfID, err := uuid.Parse(args[1])
-		if err != nil {
-			return fmt.Errorf("invalid shelf ID: %v", err)
-		}
-		return addBook(session, shelfID, args[2])
+		return addBook(session, shelfID, args[1])
 	case "music":
-		if len(args) < 3 {
-			return fmt.Errorf("please specify a shelf ID and music barcode")
-		}
-		shelfID, err := uuid.Parse(args[1])
-		if err != nil {
-			return fmt.Errorf("invalid shelf ID: %v", err)
-		}
-		return addMusic(session, shelfID, args[2])
+		return addMusic(session, shelfID, args[1])
 	case "movie_bulk":
-		if len(args) < 3 {
-			return fmt.Errorf("please specify a shelf ID and movie barcode")
-		}
-		shelfID, err := uuid.Parse(args[1])
-		if err != nil {
-			return fmt.Errorf("invalid shelf ID: %v", err)
-		}
-
-		return benchmarkCreateMovie(session, shelfID, args[2])
+		return benchmarkCreateMovie(session, shelfID, args[1])
 	default:
 		return fmt.Errorf("unknown add command: %s", args[0])
 	}
